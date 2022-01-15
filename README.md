@@ -1,2 +1,3 @@
 # ecom-inventory-stock-checker
-Check gundam stock from website.
+Ecommerce inventory checker.  
+Check gundam stock from gundamhobby.ca.  
