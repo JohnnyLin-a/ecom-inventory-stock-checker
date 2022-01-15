@@ -7,7 +7,9 @@ def main():
 
     # Start webdriver
     webEngineConfig = WebEngineConfig()
-    webEngineConfig.headless = os.getenv("DEBUG") != None and (os.getenv("DEBUG").upper() == "TRUE" or os.getenv("DEBUG") == "1")
+    webEngineConfig.headless = os.getenv("DEBUG").upper() != "TRUE"
+
+    print(webEngineConfig.headless)
 
     webEngine = WebEngine(config=webEngineConfig)
     webEngine.start()
