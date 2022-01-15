@@ -10,8 +10,6 @@ def main():
     webEngineConfig = WebEngineConfig()
     webEngineConfig.headless = os.getenv("DEBUG").upper() != "TRUE"
 
-    print(webEngineConfig.headless)
-
     webEngine = WebEngine(config=webEngineConfig)
     webEngine.start()
 
