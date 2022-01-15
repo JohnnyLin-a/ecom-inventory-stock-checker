@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from pkg.api.webengine import WebEngine, WebEngineConfig
+from pkg.api.ecomm.WwwGundamhobbyCa import WwwGundamhobbyCa
 import os
 
 def main():
@@ -15,6 +16,9 @@ def main():
     webEngine.start()
 
     # Create gundamhobby session and execute
+    gundamhobbyCaSession = WwwGundamhobbyCa()
+    gundamhobbyData = gundamhobbyCaSession.execute(webEngine)
+
     # Save gundamhobby results to database
     # Post notification on discord
 
