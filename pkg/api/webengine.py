@@ -14,7 +14,7 @@ class WebEngine:
     def __init__(self, config: WebEngineConfig):
         self.config = config
 
-    def start(self) -> bool:
+    def start(self):
         options = Options()
         options.headless = self.config.headless
         self.driver = webdriver.Firefox(options=options)
