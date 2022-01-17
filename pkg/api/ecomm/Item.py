@@ -1,6 +1,11 @@
-
+from typing import List
 
 class Item:
-    quantity: int = 0
+    quantity: int
     name: str
-    category: list = []
+    category: str
+
+    def __init__(self, quantity: int, name: str, category: str):
+        self.quantity = quantity
+        self.name = name
+        self.category = category

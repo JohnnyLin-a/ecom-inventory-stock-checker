@@ -3,8 +3,11 @@ from pkg.api.webengine import WebEngine, WebEngineConfig
 from pkg.api.ecomm.WwwGundamhobbyCa import WwwGundamhobbyCa
 import os
 
+from pkg.database.DBEngine import DBEngine
+
 def main():
     load_dotenv()
+    load_dotenv("postgres.env")
 
     # Start webdriver
     webEngineConfig = WebEngineConfig()
@@ -15,9 +18,14 @@ def main():
 
     # Create gundamhobby session and execute
     gundamhobbyCaSession = WwwGundamhobbyCa()
-    gundamhobbyData = gundamhobbyCaSession.execute(webEngine)
+    gundamhobbySessionData = gundamhobbyCaSession.execute(webEngine)
 
-    # Save gundamhobby results to database
+    # Create DBEngine and save gundamhobby results
+    db = DBEngine()
+    gundamhobbyCaSession.saveData(db, gundamhobbySessionData)
+
+    # Compare diff against previous run
+
     # Post notification on discord
 
 

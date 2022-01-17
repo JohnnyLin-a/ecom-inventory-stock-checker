@@ -1,10 +1,13 @@
 from typing import List
 from pkg.api.ecomm.Ecomm import EcommInterface
 from pkg.api.webengine import WebEngine
+from pkg.api.ecomm.Item import Item
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+
+from pkg.database.DBEngine import DBEngine
 
 class WwwGundamhobbyCa(EcommInterface):
     __skipCategories: list = ("Home", "Paint Supplies", "Tools")
@@ -24,10 +27,10 @@ class WwwGundamhobbyCa(EcommInterface):
         self.__findCategories(webEngine, webEngine.driver.find_elements(By.CSS_SELECTOR, "#AccessibleNav>li:not(.buddha-disabled)"))
 
         # find in-stock items
-        # inStockItems = []
+        inStockItems = {}
         for category in self.__categoryLinks:
             for categoryLabel, url in category.items():
-                print("Category: " + categoryLabel)
+                inStockItems[categoryLabel] = []
                 page = 1
                 while page != -1:
                     webEngine.driver.get(url + "?page=" + str(page))
@@ -59,11 +62,10 @@ class WwwGundamhobbyCa(EcommInterface):
                         if not soldOut:
                             # get item name
                             itemTitle = item.find_element(By.CSS_SELECTOR, "a>p.grid-link__title")
-                            # inStockItems.append(itemTitle.text)
-                            print(itemTitle.text)
+                            inStockItems[categoryLabel].append(Item(1, itemTitle.text, categoryLabel))
                     page += 1
 
-        return [{"data": None}]
+        return inStockItems
     
     @staticmethod
     def getUrl() -> str:
@@ -91,3 +93,6 @@ class WwwGundamhobbyCa(EcommInterface):
         except:
             return False
         return True
+
+    def saveData(self, db: DBEngine, data: dict):
+        pass
