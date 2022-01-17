@@ -13,24 +13,55 @@ class WwwGundamhobbyCa(EcommInterface):
     def __init__(self):
         pass
 
-    def execute(self, webEngine: WebEngine) -> List[dict]:
+    def execute(self, webEngine: WebEngine) -> dict:
         webEngine.driver.get(WwwGundamhobbyCa.getUrl())
 
         # Wait for banner to finish rendering
-        try:
-            WebDriverWait(webEngine.driver, 20).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "#cb-shipping-bar[style*='z-index: 9999']"))
-            )
-        except:
-            return [{"data": None, "error": "Cannot find nav bar"}]
+        if not self.__bannerWait(webEngine):
+            return {"error": "Failed to wait for banner on home page"}
         
         # find all categories from the navbar
         self.__findCategories(webEngine, webEngine.driver.find_elements(By.CSS_SELECTOR, "#AccessibleNav>li:not(.buddha-disabled)"))
 
+        # find in-stock items
+        # inStockItems = []
         for category in self.__categoryLinks:
-            for k, v in category.items():
-                print(k, v)
-        webEngine.driver.quit()
+            for categoryLabel, url in category.items():
+                print("Category: " + categoryLabel)
+                page = 1
+                while page != -1:
+                    webEngine.driver.get(url + "?page=" + str(page))
+                    # Wait for banner to finish rendering
+                    if not self.__bannerWait(webEngine):
+                        return {"error": "Failed to wait for banner on " + url}
+                    
+                    # Find items in current page:
+                    itemsContainer = webEngine.driver.find_element(By.CSS_SELECTOR, ".grid-uniform.grid-link__container")
+
+                    # Check if there are any items in this page
+                    try:
+                        itemsContainer.find_element(By.CSS_SELECTOR, "div.grid__item>p>em")
+                        page = -1
+                        continue
+                    except:
+                        # Do nothing when items are found in current page.
+                        pass
+
+                    # Iterate through all items in current page
+                    items = itemsContainer.find_elements(By.XPATH, "./*")
+                    for item in items:
+                        # Check if sold out
+                        soldOut = True
+                        try:
+                            item.find_element(By.CSS_SELECTOR, "a>span>span.badge--sold-out")
+                        except:
+                            soldOut = False
+                        if not soldOut:
+                            # get item name
+                            itemTitle = item.find_element(By.CSS_SELECTOR, "a>p.grid-link__title")
+                            # inStockItems.append(itemTitle.text)
+                            print(itemTitle.text)
+                    page += 1
 
         return [{"data": None}]
     
@@ -51,3 +82,12 @@ class WwwGundamhobbyCa(EcommInterface):
                 except:
                     # Will crash if ul is not found
                     pass
+
+    def __bannerWait(self, webEngine: WebEngine) -> bool:
+        try:
+            WebDriverWait(webEngine.driver, 20).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "#cb-shipping-bar[style*='z-index: 9999']"))
+            )
+        except:
+            return False
+        return True
