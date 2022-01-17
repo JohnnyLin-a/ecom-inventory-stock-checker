@@ -49,4 +49,5 @@ class WwwGundamhobbyCa(EcommInterface):
                     ul = e.find_element(By.CSS_SELECTOR, "ul")
                     self.__findCategories(webEngine, ul.find_elements(By.XPATH, "./*"))
                 except:
+                    # Will crash if ul is not found
                     pass
