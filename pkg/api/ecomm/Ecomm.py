@@ -1,5 +1,4 @@
 
-import string
 from typing import List
 from pkg.api.webengine import WebEngine
 
@@ -9,6 +8,6 @@ class EcommInterface:
         pass
 
     @staticmethod
-    def getUrl() -> string:
+    def getUrl() -> str:
         """Return the ecomm main website"""
         pass
