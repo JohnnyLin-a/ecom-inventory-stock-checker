@@ -131,6 +131,7 @@ class WwwGundamhobbyCa(EcommInterface):
             return {"error": "Cannot insert new execution_id for gundamhobby"}
         
         # process data, insert new items/categories accordingly, insert execution data
+        itemsAlreadyInserted = {}
         for categoryName, rawItems in data.items():
             category_id = 0
             if categoryName in categories:
@@ -162,7 +163,9 @@ class WwwGundamhobbyCa(EcommInterface):
                     items[rawItem.name]['categories'].append(categoryName)
 
                 # Finally save execution
-                db.get().execute('INSERT INTO execution_item_stocks (execution_id, item_id) VALUES (%s, %s);', (execution_id, item_id))
+                if item_id not in itemsAlreadyInserted:
+                    db.get().execute('INSERT INTO execution_item_stocks (execution_id, item_id) VALUES (%s, %s);', (execution_id, item_id))
+                    itemsAlreadyInserted[item_id] = None
         return None
 
 
