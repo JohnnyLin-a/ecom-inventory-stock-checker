@@ -162,6 +162,7 @@ class WwwGundamhobbyCa(EcommInterface):
                     items[rawItem.name]['categories'].append(categoryName)
 
                 # Finally save execution
+                db.get().execute('INSERT INTO execution_item_stocks (execution_id, item_id) VALUES (%s, %s);', (execution_id, item_id))
         return None
 
 
