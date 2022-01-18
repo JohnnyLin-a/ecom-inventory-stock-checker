@@ -33,8 +33,9 @@ def main():
 
     # Create DBEngine and save gundamhobby results
     db = DBEngine()
-    gundamhobbyCaSession.saveData(db, gundamhobbySessionData)
-
+    val = gundamhobbyCaSession.saveData(db, gundamhobbySessionData)
+    
+    print(val)
     # Compare diff against previous run
 
     # Post notification on discord

@@ -69,7 +69,7 @@ class WwwGundamhobbyCa(EcommInterface):
     
     @staticmethod
     def getUrl() -> str:
-        return "http://www.gundamhobby.ca"
+        return "https://www.gundamhobby.ca"
 
     def __findCategories(self, webEngine: WebEngine, listItems: List[WebElement]) -> None:
         for e in listItems:
@@ -94,5 +94,74 @@ class WwwGundamhobbyCa(EcommInterface):
             return False
         return True
 
-    def saveData(self, db: DBEngine, data: dict):
-        pass
+    def saveData(self, db: DBEngine, data: dict) -> dict:
+        ecom_id = 0
+        categories = {}
+        items = {}
+
+        # Find ecom_id for gundamhobby
+        cursorResult = db.get().execute('SELECT id FROM ecoms WHERE website = %s LIMIT 1;', (self.getUrl()))
+        if cursorResult.rowcount == 0:
+            cursorResult = db.get().execute('INSERT INTO ecoms (website) VALUES (%s) RETURNING id;', (self.getUrl()))
+        for r in cursorResult:
+            ecom_id = r['id']
+        if ecom_id == 0:
+            return {"error": "Cannot find ecom_id for gundamhobby"}
+        
+        # Find items in db, set existing items and categories
+        cursorResult = db.get().execute("""select items.name AS "items.name", items.id as "items.id", categories.name AS "categories.name", categories.id AS "categories.id" 
+            from items
+            left join item_categories on item_categories.item_id = items.id
+            left join categories on categories.id = item_categories.category_id
+            where items.ecom_id = %s;""", (ecom_id))
+        for r in cursorResult:
+            if r['categories.name'] not in categories:
+                categories[r['categories.name']] = {'id': r['categories.id']}
+            if r['items.name'] not in items:
+                items[r['items.name']] = {'id': r['items.id'], 'categories': [r["categories.name"]]}
+            else:
+                items[r['items.name']]['categories'].append(r["categories.name"])
+
+        # Save new execution
+        execution_id = 0
+        cursorResult = db.get().execute('INSERT INTO executions (ecom_id) VALUES (%s) RETURNING id;', (ecom_id))
+        for r in cursorResult:
+            execution_id = r['id']
+        if execution_id == 0:
+            return {"error": "Cannot insert new execution_id for gundamhobby"}
+        
+        # process data, insert new items/categories accordingly, insert execution data
+        for categoryName, rawItems in data.items():
+            category_id = 0
+            if categoryName in categories:
+                category_id = categories[categoryName]
+            if category_id == 0:
+                cursorResult = db.get().execute('INSERT INTO categories (name) VALUES (%s) RETURNING id;', (categoryName))
+                for r in cursorResult:
+                    category_id = r['id']
+                    categories[categoryName] = {'id': category_id}
+            if category_id == 0:
+                return {"error": "Cannot insert new category_id for gundamhobby"}
+            
+            for rawItem in rawItems:
+                # match item
+                item_id = 0
+                if rawItem.name in items:
+                    item_id = items[rawItem.name]['id']
+                if item_id == 0:
+                    cursorResult = db.get().execute('INSERT INTO items (ecom_id, name) VALUES (%s, %s) RETURNING id;', (ecom_id, rawItem.name))
+                    for r in cursorResult:
+                        item_id = r['id']
+                        items[rawItem.name] = {'id': item_id, 'categories': [categoryName]}
+                        db.get().execute('INSERT INTO item_categories (item_id, category_id) VALUES (%s, %s);', (item_id, category_id))
+                if item_id == 0:
+                    return {"error": "Cannot insert new item_id for gundamhobby"}
+                # check if category is linked and add it if it isn't
+                if categoryName not in items[rawItem.name]['categories']:
+                    db.get().execute('INSERT INTO item_categories (item_id, category_id) VALUES (%s, %s);', (item_id, category_id))
+                    items[rawItem.name]['categories'].append(categoryName)
+
+                # Finally save execution
+        return None
+
+
