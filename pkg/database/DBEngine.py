@@ -7,7 +7,7 @@ class DBEngine:
 
     def __init__(self):
         db_string = "postgresql://" + os.getenv("POSTGRES_USER") + ":" + os.getenv("POSTGRES_PASSWORD") + "@" + os.getenv("POSTGRES_HOST") + ":" + os.getenv("POSTGRES_PORT") + "/" + os.getenv("POSTGRES_DB")
-        self.__db = create_engine(db_string)
+        self.__db = create_engine(db_string, echo=os.getenv('DEBUG').upper() == "TRUE")
 
     def get(self) -> Engine:
         return self.__db
