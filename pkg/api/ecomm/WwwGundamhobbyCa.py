@@ -169,13 +169,42 @@ class WwwGundamhobbyCa(EcommInterface):
         return {"error": None, "execution_id": execution_id}
 
     def getDiffFromLast2SuccessfulRuns(self, db: DBEngine) -> dict:
-        # Get ecom_id
-        ecom_id = 0
-        cursorResult = db.get().execute('SELECT id FROM ecoms WHERE website = %s LIMIT 1;', (self.getUrl()))
-        if cursorResult.rowcount == 0:
-            return {"error": "Cannot find ecom_id for gundamhobby"}
+        cursorResult = db.get().execute("""SELECT second_last_run_items.item_id as "second_last_run_items.item_id", second_last_run_items.name as "second_last_run_items.name", last_run_items.item_id as "last_run_items.item_id", last_run_items.name as "last_run_items.name"
+            FROM (
+            SELECT execution_item_stocks.item_id, items.name
+            FROM execution_item_stocks
+            INNER JOIN executions on execution_item_stocks.execution_id = executions.id
+            inner join items on items.id = execution_item_stocks.item_id
+            WHERE executions.id IN (
+                SELECT executions.id FROM executions
+                inner join ecoms on ecoms.id = executions.ecom_id
+                WHERE executions.successful = true AND ecoms.website = %s
+                AND executions.id != (
+                    SELECT executions.id FROM executions
+                    inner join ecoms on ecoms.id = executions.ecom_id
+                    WHERE executions.successful = true AND ecoms.website = %s
+                    ORDER BY executions.id DESC
+                    LIMIT 1
+                )
+                ORDER BY executions.id DESC
+                LIMIT 1
+            )) AS second_last_run_items
+            FULL OUTER JOIN (SELECT execution_item_stocks.item_id, items.name
+            FROM execution_item_stocks
+            INNER JOIN executions on execution_item_stocks.execution_id = executions.id
+            inner join items on items.id = execution_item_stocks.item_id
+            WHERE executions.id IN (
+                SELECT executions.id FROM executions
+                inner join ecoms on ecoms.id = executions.ecom_id
+                WHERE executions.successful = true AND ecoms.website = %s
+                ORDER BY executions.id DESC
+                LIMIT 1
+            )) AS last_run_items ON last_run_items.item_id = second_last_run_items.item_id
+            WHERE second_last_run_items.item_id IS NULL OR last_run_items.item_id IS NULL """, (self.getUrl(),self.getUrl(),self.getUrl()))
+        data = {'+': [], '-': []}
         for r in cursorResult:
-            ecom_id = r['id']
-        
-
-        return {'error': None, 'data': {'+': [], '-': []}}
+            if r['second_last_run_items.item_id'] != None:
+                data['-'].append(r['second_last_run_items.name'])
+            else:
+                data['+'].append(r['last_run_items.name'])
+        return {'error': None, 'data': data}
