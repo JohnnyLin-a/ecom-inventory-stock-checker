@@ -64,15 +64,17 @@ def main():
         if len(row['name']) > 2000:
             break
         fullMsg[fullMsgPart] += row['name'] + '\n'
-    discordWebhookFull = os.getenv("DISCORD_WEBHOOK_GUNDAMHOBBY_FULL")
-    if discordWebhookFull != None:
-        time.sleep(1)
-        requests.post(discordWebhookFull, {'content': "Posting full inventory at this time:"})
-        for t in fullMsg:
+
+    if len(data['+']) + len(data['-']) != 0:
+        discordWebhookFull = os.getenv("DISCORD_WEBHOOK_GUNDAMHOBBY_FULL")
+        if discordWebhookFull != None:
             time.sleep(1)
-            requests.post(discordWebhookFull, {'content': t})
-    time.sleep(1)
-    requests.post(discordWebhookFull, {'content': "End of full inventory"})
+            requests.post(discordWebhookFull, {'content': "Posting full inventory at this time:"})
+            for t in fullMsg:
+                time.sleep(1)
+                requests.post(discordWebhookFull, {'content': t})
+            time.sleep(1)
+            requests.post(discordWebhookFull, {'content': "End of full inventory"})
 
     
 
