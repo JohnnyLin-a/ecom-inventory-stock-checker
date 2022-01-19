@@ -6,7 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-
 from pkg.database.DBEngine import DBEngine
 
 class WwwGundamhobbyCa(EcommInterface):
@@ -203,3 +202,19 @@ class WwwGundamhobbyCa(EcommInterface):
             else:
                 data['+'].append(r['last_run_items.name'])
         return {'error': None, 'data': data}
+
+    def getFullInventory(self, db: DBEngine):
+        cursorResult = db.get().execute("""SELECT items.name
+            FROM execution_item_stocks
+            INNER JOIN executions on execution_item_stocks.execution_id = executions.id
+            inner join items on items.id = execution_item_stocks.item_id
+            WHERE executions.id IN (
+                SELECT executions.id FROM executions
+                inner join ecoms on ecoms.id = executions.ecom_id
+                WHERE executions.successful = true AND ecoms.website = %s
+                ORDER BY executions.id DESC
+                LIMIT 1
+            )
+            ORDER BY items.name""", (self.getUrl()))
+        return cursorResult
+        
