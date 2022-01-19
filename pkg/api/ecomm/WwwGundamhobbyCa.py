@@ -179,15 +179,9 @@ class WwwGundamhobbyCa(EcommInterface):
                 SELECT executions.id FROM executions
                 inner join ecoms on ecoms.id = executions.ecom_id
                 WHERE executions.successful = true AND ecoms.website = %s
-                AND executions.id != (
-                    SELECT executions.id FROM executions
-                    inner join ecoms on ecoms.id = executions.ecom_id
-                    WHERE executions.successful = true AND ecoms.website = %s
-                    ORDER BY executions.id DESC
-                    LIMIT 1
-                )
                 ORDER BY executions.id DESC
                 LIMIT 1
+                OFFSET 1 ROWS
             )) AS second_last_run_items
             FULL OUTER JOIN (SELECT execution_item_stocks.item_id, items.name
             FROM execution_item_stocks
@@ -200,7 +194,7 @@ class WwwGundamhobbyCa(EcommInterface):
                 ORDER BY executions.id DESC
                 LIMIT 1
             )) AS last_run_items ON last_run_items.item_id = second_last_run_items.item_id
-            WHERE second_last_run_items.item_id IS NULL OR last_run_items.item_id IS NULL """, (self.getUrl(),self.getUrl(),self.getUrl()))
+            WHERE second_last_run_items.item_id IS NULL OR last_run_items.item_id IS NULL;""", (self.getUrl(), self.getUrl()))
         data = {'+': [], '-': []}
         for r in cursorResult:
             if r['second_last_run_items.item_id'] != None:
