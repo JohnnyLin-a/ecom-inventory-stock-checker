@@ -41,7 +41,7 @@ def main():
     diffMsg = ""
     data = diff['data']
     if len(data['+']) != 0:
-        diffMsg += 'New arrivals:\n'
+        diffMsg += '@everyone\nNew arrivals:\n'
         for plus in data['+']:
             diffMsg += plus + '\n'
         diffMsg += '\n'
@@ -53,7 +53,7 @@ def main():
     
     discordWebhookDiff = os.getenv("DISCORD_WEBHOOK_GUNDAMHOBBY_DIFF")
     if discordWebhookDiff != None:
-        requests.post(discordWebhookDiff, {'content': "@everyone\n" + diffMsg})
+        requests.post(discordWebhookDiff, {'content': diffMsg})
 
     fullMsgPart = 0
     fullMsg = ['']
@@ -67,7 +67,7 @@ def main():
     discordWebhookFull = os.getenv("DISCORD_WEBHOOK_GUNDAMHOBBY_FULL")
     if discordWebhookFull != None:
         time.sleep(1)
-        requests.post(discordWebhookFull, {'content': "@everyone Posting full inventory at this time:"})
+        requests.post(discordWebhookFull, {'content': "Posting full inventory at this time:"})
         for t in fullMsg:
             time.sleep(1)
             requests.post(discordWebhookFull, {'content': t})
