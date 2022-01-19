@@ -28,8 +28,9 @@ class WwwGundamhobbyCa(EcommInterface):
 
         # find in-stock items
         inStockItems = {}
-        for category in self.__categoryLinks:
+        for index, category in enumerate(self.__categoryLinks):
             for categoryLabel, url in category.items():
+                print("Onto category: " + categoryLabel + ' ' + str(index + 1) + "/" + str(len(self.__categoryLinks)))
                 inStockItems[categoryLabel] = []
                 page = 1
                 while page != -1:
