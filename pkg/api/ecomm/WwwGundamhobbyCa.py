@@ -135,7 +135,7 @@ class WwwGundamhobbyCa(EcommInterface):
         for categoryName, rawItems in data.items():
             category_id = 0
             if categoryName in categories:
-                category_id = categories[categoryName]
+                category_id = categories[categoryName]['id']
             if category_id == 0:
                 cursorResult = db.get().execute('INSERT INTO categories (name) VALUES (%s) RETURNING id;', (categoryName))
                 for r in cursorResult:
@@ -166,6 +166,16 @@ class WwwGundamhobbyCa(EcommInterface):
                 if item_id not in itemsAlreadyInserted:
                     db.get().execute('INSERT INTO execution_item_stocks (execution_id, item_id) VALUES (%s, %s);', (execution_id, item_id))
                     itemsAlreadyInserted[item_id] = None
-        return None
+        return {"error": None, "execution_id": execution_id}
 
+    def getDiffFromLast2SuccessfulRuns(self, db: DBEngine) -> dict:
+        # Get ecom_id
+        ecom_id = 0
+        cursorResult = db.get().execute('SELECT id FROM ecoms WHERE website = %s LIMIT 1;', (self.getUrl()))
+        if cursorResult.rowcount == 0:
+            return {"error": "Cannot find ecom_id for gundamhobby"}
+        for r in cursorResult:
+            ecom_id = r['id']
+        
 
+        return {'error': None, 'data': {'+': [], '-': []}}

@@ -15,29 +15,24 @@ def main():
     webEngineConfig = WebEngineConfig()
     webEngineConfig.headless = os.getenv("DEBUG").upper() != "TRUE"
 
-    # webEngine = WebEngine(config=webEngineConfig)
-    # webEngine.start()
+    webEngine = WebEngine(config=webEngineConfig)
+    webEngine.start()
 
     # Create gundamhobby session and execute
     gundamhobbyCaSession = WwwGundamhobbyCa()
-    # gundamhobbySessionData = gundamhobbyCaSession.execute(webEngine)
-
-    # Use json cache instead of executing for 10min
-    with open('./2022-01-16.json.log') as f:
-        gundamhobbySessionDataJson = json.load(f)
-    gundamhobbySessionData = {}
-    for category, itemsRaw in gundamhobbySessionDataJson.items():
-        gundamhobbySessionData[category] = []
-        for itemRaw in itemsRaw:
-            gundamhobbySessionData[category].append(Item(1,itemRaw['name'],itemRaw['category']))
+    gundamhobbySessionData = gundamhobbyCaSession.execute(webEngine)
+    webEngine.driver.quit()
 
     # Create DBEngine and save gundamhobby results
     db = DBEngine()
-    val = gundamhobbyCaSession.saveData(db, gundamhobbySessionData)
-    
-    print(val)
-    # Compare diff against previous run
+    result = gundamhobbyCaSession.saveData(db, gundamhobbySessionData)
+    if not (result['error'] == None and result['execution_id'] != 0):
+        print('Run unsuccessful, exitting app...')
+        os._exit(1)
+    db.get().execute('UPDATE executions SET successful = true WHERE id = %s', (result['execution_id']))
 
+    # Compare diff against previous run
+    
     # Post notification on discord
 
 
