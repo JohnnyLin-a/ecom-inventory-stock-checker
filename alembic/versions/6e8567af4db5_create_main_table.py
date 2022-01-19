@@ -27,6 +27,7 @@ def upgrade():
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column('ecom_id', sa.BigInteger, sa.ForeignKey('ecoms.id'), nullable=False),
         sa.Column('exec_datetime', sa.DateTime, nullable=False, server_default=sa.func.now()),
+        sa.Column('successful', sa.Boolean, nullable=False, server_default='false'),
     )
     op.create_table(
         'categories',
