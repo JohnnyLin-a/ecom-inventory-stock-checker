@@ -38,22 +38,46 @@ def main():
     fullInventory = gundamhobbyCaSession.getFullInventory(db)
 
     # Post notification on discord
-    diffMsg = ""
+    diffMsg = 0
+    diffMsgParts = ['']
     data = diff['data']
+
     if len(data['+']) != 0:
-        diffMsg += '@everyone\nNew arrivals:\n'
+        diffMsgParts[diffMsg] += '@everyone\nNew arrivals:\n'
         for plus in data['+']:
-            diffMsg += plus + '\n'
-        diffMsg += '\n'
+            if len(diffMsgParts[diffMsg]) + len(plus) > 2000:
+                diffMsg += 1
+                diffMsgParts.append('')
+            if len(plus) > 2000:
+                break
+            diffMsgParts[diffMsg] += plus + '\n'
+        if len(diffMsgParts[diffMsg]) + 1 > 2000:
+            diffMsg += 1
+            diffMsgParts.append('')
+        diffMsgParts[diffMsg] += '\n'
+
     if len(data['-']) != 0:
-        diffMsg += 'Recently out of stock:\n'
+        if len(diffMsgParts[diffMsg]) + 23 > 2000:
+            diffMsg += 1
+            diffMsgParts.append('')
+        diffMsgParts[diffMsg] += 'Recently out of stock:\n'
         for minus in data['-']:
-            diffMsg += minus + '\n'
-        diffMsg += '\n'
+            if len(diffMsgParts[diffMsg]) + len(minus) > 2000:
+                diffMsg += 1
+                diffMsgParts.append('')
+            if len(minus) > 2000:
+                break
+            diffMsgParts[diffMsg] += minus + '\n'
+        if len(diffMsgParts[diffMsg]) + 1 > 2000:
+            diffMsg += 1
+            diffMsgParts.append('')
+        diffMsgParts[diffMsg] += '\n'
     
     discordWebhookDiff = os.getenv("DISCORD_WEBHOOK_GUNDAMHOBBY_DIFF")
     if discordWebhookDiff != None:
-        requests.post(discordWebhookDiff, {'content': diffMsg})
+        for diffMsgPart in diffMsgParts:
+            time.sleep(1)
+            requests.post(discordWebhookDiff, {'content': diffMsgPart})  
 
     fullMsgPart = 0
     fullMsg = ['']
