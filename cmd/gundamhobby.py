@@ -3,7 +3,6 @@ import time
 from dotenv import load_dotenv
 from pkg.api.webengine import WebEngine, WebEngineConfig
 from pkg.api.ecomm.WwwGundamhobbyCa import WwwGundamhobbyCa
-from pkg.api.ecomm.Item import Item
 import os
 import requests
 
