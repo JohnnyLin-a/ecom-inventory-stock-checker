@@ -34,7 +34,7 @@ class NiigsCa(EcommInterface):
         # find in-stock items
         inStockItems = {"*": []}
         for page in range(1, maxPage):
-            print("Onto page " + str(page) + "/" + str(maxPage))
+            print("Onto page " + str(page) + "/" + str(maxPage - 1))
             webEngine.driver.get(NiigsCa.getUrl() + "/collections/all-availible-items?sort_by=title-ascending&page=" + str(page))
 
             # wait for item containers
