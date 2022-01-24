@@ -1,6 +1,7 @@
 import time
 from dotenv import load_dotenv
 from pkg.api.ecomm.Ecomm import EcommInterface
+from pkg.api.ecomm.MetrohobbiesCa import MetrohobbiesCa
 from pkg.api.ecomm.NiigsCa import NiigsCa
 from pkg.api.ecomm.WwwGundamhobbyCa import WwwGundamhobbyCa
 from pkg.api.webengine import WebEngine, WebEngineConfig
@@ -101,6 +102,7 @@ def main():
     load_dotenv("postgres.env")
     ecoms = [
         NiigsCa(),
+        MetrohobbiesCa(),
         WwwGundamhobbyCa(),
     ]
     db = DBEngine()
