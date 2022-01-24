@@ -1,14 +1,14 @@
-from typing import List
 from pkg.api.ecomm.Ecomm import EcommInterface
 from pkg.api.webengine import WebEngine
 from pkg.api.ecomm.Item import Item
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webelement import WebElement
-from pkg.database.DBEngine import DBEngine
 
 class NiigsCa(EcommInterface):
+    webhookFull: str = "DISCORD_WEBHOOK_NIIGS_FULL"
+    webhookDiff: str = "DISCORD_WEBHOOK_NIIGS_DIFF"
+
     def __init__(self):
         pass
 

@@ -1,16 +1,15 @@
 import time
 from dotenv import load_dotenv
-from pkg.api.webengine import WebEngine, WebEngineConfig
+from pkg.api.ecomm.Ecomm import EcommInterface
+from pkg.api.ecomm.NiigsCa import NiigsCa
 from pkg.api.ecomm.WwwGundamhobbyCa import WwwGundamhobbyCa
+from pkg.api.webengine import WebEngine, WebEngineConfig
 import os
 import requests
 
 from pkg.database.DBEngine import DBEngine
 
-def main():
-    load_dotenv()
-    load_dotenv("postgres.env")
-
+def execEcom(ecomSession: EcommInterface, db: DBEngine):
     # Start webdriver
     webEngineConfig = WebEngineConfig()
     webEngineConfig.headless = os.getenv("DEBUG").upper() != "TRUE"
@@ -18,22 +17,20 @@ def main():
     webEngine = WebEngine(config=webEngineConfig)
     webEngine.start()
 
-    # Create gundamhobby session and execute
-    gundamhobbyCaSession = WwwGundamhobbyCa()
-    gundamhobbySessionData = gundamhobbyCaSession.execute(webEngine)
+    # Create ecomm session and execute
+    ecomSessionData = ecomSession.execute(webEngine)
     webEngine.driver.quit()
 
-    # Create DBEngine and save gundamhobby results
-    db = DBEngine()
-    result = gundamhobbyCaSession.saveData(db, gundamhobbySessionData)
+    # Create DBEngine and save niigs results
+    result = ecomSession.saveData(db, ecomSessionData)
     if not (result['error'] == None and result['execution_id'] != 0):
-        print('Run unsuccessful, exitting app...')
-        os._exit(1)
+        print('Run unsuccessful, exitting execution...')
+        return
     db.get().execute('UPDATE executions SET successful = true WHERE id = %s', (result['execution_id']))
 
     # Compare diff against previous run
-    diff = gundamhobbyCaSession.getDiffFromLast2SuccessfulRuns(db)
-    fullInventory = gundamhobbyCaSession.getFullInventory(db)
+    diff = ecomSession.getDiffFromLast2SuccessfulRuns(db)
+    fullInventory = ecomSession.getFullInventory(db)
 
     # Post notification on discord
     diffMsg = 0
@@ -71,7 +68,7 @@ def main():
             diffMsgParts.append('')
         diffMsgParts[diffMsg] += '\n'
     
-    discordWebhookDiff = os.getenv("DISCORD_WEBHOOK_GUNDAMHOBBY_DIFF")
+    discordWebhookDiff = os.getenv(ecomSession.webhookDiff)
     if discordWebhookDiff != None:
         for diffMsgPart in diffMsgParts:
             time.sleep(1)
@@ -88,7 +85,7 @@ def main():
         fullMsg[fullMsgPart] += row['name'] + '\n'
 
     if len(data['+']) + len(data['-']) != 0:
-        discordWebhookFull = os.getenv("DISCORD_WEBHOOK_GUNDAMHOBBY_FULL")
+        discordWebhookFull = os.getenv(ecomSession.webhookFull)
         if discordWebhookFull != None:
             time.sleep(1)
             requests.post(discordWebhookFull, {'content': "Posting full inventory at this time:"})
@@ -98,7 +95,17 @@ def main():
             time.sleep(1)
             requests.post(discordWebhookFull, {'content': "End of full inventory"})
 
-    
+
+def main():
+    load_dotenv()
+    load_dotenv("postgres.env")
+    ecoms = [
+        NiigsCa(),
+        WwwGundamhobbyCa(),
+    ]
+    db = DBEngine()
+    for ecom in ecoms:
+        execEcom(ecom, db)
 
 
 if __name__ == '__main__':

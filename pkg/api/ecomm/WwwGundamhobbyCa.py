@@ -9,6 +9,8 @@ from selenium.webdriver.remote.webelement import WebElement
 from pkg.database.DBEngine import DBEngine
 
 class WwwGundamhobbyCa(EcommInterface):
+    webhookFull: str = "DISCORD_WEBHOOK_GUNDAMHOBBY_FULL"
+    webhookDiff: str = "DISCORD_WEBHOOK_GUNDAMHOBBY_DIFF"
     __skipCategories: list = ("Home", "Paint Supplies", "Tools")
     __categoryLinks: List[dict] = []
 

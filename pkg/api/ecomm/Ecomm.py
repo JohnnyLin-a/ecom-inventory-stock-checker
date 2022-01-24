@@ -4,6 +4,9 @@ from pkg.api.webengine import WebEngine
 from pkg.database.DBEngine import DBEngine
 
 class EcommInterface:
+    webhookFull: str
+    webhookDiff: str
+
     def execute(self, webEngine: WebEngine) -> List[dict]:
         """Execute steps to get the data"""
         pass
