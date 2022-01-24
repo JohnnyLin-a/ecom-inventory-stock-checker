@@ -105,6 +105,7 @@ def main():
     ]
     db = DBEngine()
     for ecom in ecoms:
+        print("Execute: " + str(ecom.__class__.__name__))
         execEcom(ecom, db)
 
 

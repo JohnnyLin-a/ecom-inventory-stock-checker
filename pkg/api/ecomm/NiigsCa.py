@@ -13,7 +13,6 @@ class NiigsCa(EcommInterface):
         pass
 
     def execute(self, webEngine: WebEngine) -> dict:
-        print("")
         webEngine.driver.get(NiigsCa.getUrl() + "/collections/all-availible-items?sort_by=title-ascending&page=1")
         maxPage = 0
 
