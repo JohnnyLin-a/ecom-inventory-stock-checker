@@ -4,6 +4,7 @@ from pkg.api.ecomm.Item import Item
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import time
 
 class MetrohobbiesCa(EcommInterface):
     webhookFull: str = "DISCORD_WEBHOOK_METROHOBBIES_FULL"
@@ -19,7 +20,6 @@ class MetrohobbiesCa(EcommInterface):
 
         webEngine.driver.get(self.getUrl() + "/s/shop?page=1&limit=180&sort_by=created_date&sort_order=desc&item_status=in_stock")
         maxPage = 0
-
 
         # find max page
         try:
@@ -48,6 +48,21 @@ class MetrohobbiesCa(EcommInterface):
                 )
             except:
                 return {"error": "cannot find items container"}
+
+            # Wait until the loading is done
+            loaded = False
+            i = 0
+            while i < 60:
+                time.sleep(1)
+                try:
+                    webEngine.driver.find_element(By.CSS_SELECTOR, ".product-image-skeleton")
+                except:
+                    loaded = True
+                    i = 60
+            
+            if not loaded:
+                return {"error": "cannot wait for loading"}
+
             # Find items in current page:
             items = webEngine.driver.find_elements(By.CSS_SELECTOR, ".category__wrapper>.category__products>.w-container>div:nth-child(2)>div>div")
 
