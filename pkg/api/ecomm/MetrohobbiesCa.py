@@ -4,7 +4,7 @@ from pkg.api.ecomm.Item import Item
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-import time
+import requests
 
 class MetrohobbiesCa(EcommInterface):
     webhookFull: str = "DISCORD_WEBHOOK_METROHOBBIES_FULL"
@@ -14,62 +14,28 @@ class MetrohobbiesCa(EcommInterface):
         pass
 
     def execute(self, webEngine: WebEngine) -> dict:
-        # Dismiss free shipping message by adding cookie
-        webEngine.driver.get(self.getUrl() + "/s/shop?page=1&limit=180&sort_by=created_date&sort_order=desc&item_status=in_stock")
-        webEngine.driver.add_cookie({"name": "leadform_d76274a5-8666-46d9-be27-d447af3baed5_closed", "value": "1", "path": "/", "domain": "www.metrohobbies.ca", "secure": False, "sameSite": "Lax", "expiry": 2147483647})
-
-        webEngine.driver.get(self.getUrl() + "/s/shop?page=1&limit=180&sort_by=created_date&sort_order=desc&item_status=in_stock")
-        maxPage = 0
-
-        # find max page
-        try:
-            WebDriverWait(webEngine.driver, 20).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, ".pagination-page-numbers"))
-            )
-            pagesDOM = webEngine.driver.find_elements(By.CSS_SELECTOR, ".pagination-page-numbers>a")
-            maxPage = int(pagesDOM[len(pagesDOM)-1].text.strip()) + 1
-        except:
-            return {"error": "cannot wait for max page number"}
-        
-        if maxPage == 1:
-            return {"error": "failed to get max page"}
-
-
-        # find in-stock items
+        # Use rest api directly
         inStockItems = {"*": []}
-        for page in range(1, maxPage):
-            print("Onto page " + str(page) + "/" + str(maxPage - 1))
-            webEngine.driver.get(self.getUrl() + "/s/shop?page=" + str(page) + "&limit=180&sort_by=created_date&sort_order=desc&item_status=in_stock")
-
-            # wait for item containers
+        page = 1
+        totalPages = 1
+        while page <= totalPages:
+            print("Onto page " + str(page) + "/" + str(totalPages))
+            req = requests.get("https://cdn5.editmysite.com/app/store/api/v17/editor/users/131444256/sites/426079854127040612/products?page=" + str(page) + "&per_page=180&sort_by=created_date&sort_order=desc&in_stock=1&excluded_fulfillment=dine_in")
+            if not req.ok:
+                return {"error": "failed to get data for page " + str(page)}
             try:
-                WebDriverWait(webEngine.driver, 20).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, ".category__wrapper>.category__products>.w-container>div:nth-child(2)>div>div"))
-                )
+                data = req.json()
             except:
-                return {"error": "cannot find items container"}
-
-            # Wait until the loading is done
-            loaded = False
-            i = 0
-            while i < 60:
-                time.sleep(1)
-                try:
-                    webEngine.driver.find_element(By.CSS_SELECTOR, ".product-image-skeleton")
-                except:
-                    loaded = True
-                    i = 60
+                return {"error": "failed to convert to json for page " + str(page)}
             
-            if not loaded:
-                return {"error": "cannot wait for loading"}
+            # Set max page
+            totalPages = data['meta']['pagination']['total_pages']
 
-            # Find items in current page:
-            items = webEngine.driver.find_elements(By.CSS_SELECTOR, ".category__wrapper>.category__products>.w-container>div:nth-child(2)>div>div")
-
-            for itemDOM in items:
-                nameDOM = itemDOM.find_element(By.CSS_SELECTOR, "div>a>div>div>div>p.w-product-title")
-                name = nameDOM.text
-                inStockItems["*"].append(Item(1, name, "*"))
+            # iterate over items
+            for item in data['data']:
+                inStockItems["*"].append(Item(1, item['name'], '*'))
+            
+            page += 1
         return inStockItems
     
     @staticmethod
