@@ -2,7 +2,10 @@
 Ecommerce inventory checker.  
 
 ## Available ecomms:
-https://www.gundamhobby.ca
+https://www.gundamhobby.ca  
+https://www.metrohobbies.ca  
+https://niigs.ca  
+https://scifianime.ca  
 
 Setting up venv:
 ```console

@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from pkg.api.ecomm.Ecomm import EcommInterface
 from pkg.api.ecomm.MetrohobbiesCa import MetrohobbiesCa
 from pkg.api.ecomm.NiigsCa import NiigsCa
+from pkg.api.ecomm.ScifianimeCa import ScifianimeCa
 from pkg.api.ecomm.WwwGundamhobbyCa import WwwGundamhobbyCa
 from pkg.api.webengine import WebEngine, WebEngineConfig
 import os
@@ -103,6 +104,7 @@ def main():
     ecoms = [
         NiigsCa(),
         MetrohobbiesCa(),
+        ScifianimeCa(),
         WwwGundamhobbyCa(),
     ]
     db = DBEngine()
