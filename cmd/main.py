@@ -103,7 +103,7 @@ def main():
     load_dotenv("postgres.env")
     ecoms = [
         NiigsCa(),
-        MetrohobbiesCa(),
+        # MetrohobbiesCa(), # Removed because there was no flat rate shipping, and it ended up being so expensive
         ScifianimeCa(),
         WwwGundamhobbyCa(),
     ]
