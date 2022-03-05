@@ -33,7 +33,8 @@ class MetrohobbiesCa(EcommInterface):
 
             # iterate over items
             for item in data['data']:
-                inStockItems["*"].append(Item(1, item['name'], '*'))
+                if item['badges']['out_of_stock'] == False:
+                    inStockItems["*"].append(Item(1, item['name'], '*'))
             
             page += 1
         return inStockItems
