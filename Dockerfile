@@ -1,15 +1,20 @@
-FROM ubuntu:20.04
-ENV TZ="America/New_York" DEBIAN_FRONTEND=noninteractive
+FROM node:18-bullseye-slim
+
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y python3 python3-pip firefox firefox-geckodriver && \
-    pip3 install -U pip && \
+    apt-get install -y tzdata && \
+    ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
     rm -rf /var/lib/apt/lists/*
 
-COPY ./requirements.txt /root/requirements.txt
+RUN yarn global add ts-node
 
-RUN pip3 install wheel setuptools && pip3 install -r /root/requirements.txt
+WORKDIR /src
 
-VOLUME [ "/src" ]
+COPY yarn.lock package.json /src/
 
-CMD python3 -m cmd.main
+RUN yarn install --production=true
+
+COPY ./* /src/
+
+RUN ts-node index.ts
