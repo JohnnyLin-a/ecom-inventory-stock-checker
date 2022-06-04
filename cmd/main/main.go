@@ -4,8 +4,8 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/JohnnyLin-a/ecom-inventory-stock-checker/pkg/api/ecom"
-	"github.com/JohnnyLin-a/ecom-inventory-stock-checker/pkg/api/ecom/gundamhobbyca"
+	"github.com/JohnnyLin-a/ecom-inventory-stock-checker/internal/ecom"
+	"github.com/JohnnyLin-a/ecom-inventory-stock-checker/internal/ecom/gundamhobbyca"
 )
 
 func typeOf(i interface{}) reflect.Type {
