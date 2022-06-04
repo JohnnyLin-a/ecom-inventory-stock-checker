@@ -1,0 +1,15 @@
+{
+  "name": "ecom-inventory-stock-checker",
+  "version": "0.0.0",
+  "main": "cmd/index.ts",
+  "repository": "https://github.com/JohnnyLin-a/ecom-inventory-stock-checker",
+  "author": "JohnnyLin-a",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.11"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.3"
+  }
+}
