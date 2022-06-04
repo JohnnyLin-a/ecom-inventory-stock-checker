@@ -1,34 +1,44 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 	"reflect"
 
 	"github.com/JohnnyLin-a/ecom-inventory-stock-checker/internal/ecom"
 	"github.com/JohnnyLin-a/ecom-inventory-stock-checker/internal/ecom/gundamhobbyca"
 )
 
-func typeOf(i interface{}) reflect.Type {
-	return reflect.ValueOf(i).Type()
-}
 
-func ptrOf(i interface{}) reflect.Value {
-	return reflect.ValueOf(i)
+
+func loadConfig() {
+
 }
 
 func main() {
-	var allEcoms = map[string]struct {
-		EcomBase *ecom.EcomBase `json="config"`
-		Type     reflect.Type   `json="-"`
-		Ptr      reflect.Value  `json="-"`
-	}{
-		"gundamhobbyca": {
-			EcomBase: &gundamhobbyca.Impl.EcomBase,
-			Type:     typeOf(gundamhobbyca.Impl),
-			Ptr:      ptrOf(&gundamhobbyca.Impl),
-		},
+
+	for k, ecomEntry := range allEcoms {
+		log.Println(k, ecomEntry.Type, ecomEntry.Ptr, ecomEntry.EcomBase.Url)
 	}
-	for _, ecomEntry := range allEcoms {
-		log.Println(ecomEntry.Type, ecomEntry.Ptr)
+	ecomConfigFile, err := os.Open("ecom_config.json")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	ecomConfigBytes, err := ioutil.ReadAll(ecomConfigFile)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	err = json.Unmarshal(ecomConfigBytes, &allEcoms)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	for k, ecomEntry := range allEcoms {
+		log.Println(k, ecomEntry.Type, ecomEntry.Ptr, ecomEntry.EcomBase.Url)
 	}
 }
