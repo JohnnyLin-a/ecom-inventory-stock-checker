@@ -131,3 +131,4 @@ dmypy.json
 .pyre/
 
 node_modules
+ecom_configs.json
