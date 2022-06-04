@@ -3,3 +3,5 @@ node_modules
 .env
 ecom_configs.json
 postgres.env
+*.js
+dist

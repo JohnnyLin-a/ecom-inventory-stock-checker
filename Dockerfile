@@ -1,3 +1,15 @@
+FROM node:18-bullseye-slim as build
+
+WORKDIR /src
+
+COPY yarn.lock package.json /src/
+
+RUN yarn install --production=true
+
+COPY . /src/
+
+RUN yarn build
+
 FROM node:18-bullseye-slim
 
 RUN apt-get update && \
@@ -7,14 +19,8 @@ RUN apt-get update && \
     dpkg-reconfigure -f noninteractive tzdata && \
     rm -rf /var/lib/apt/lists/*
 
-RUN yarn global add ts-node
+COPY --from=build /src/dist /dist/
 
-WORKDIR /src
+WORKDIR /dist
 
-COPY yarn.lock package.json /src/
-
-RUN yarn install --production=true
-
-COPY ./* /src/
-
-RUN ts-node index.ts
+CMD node index.js
