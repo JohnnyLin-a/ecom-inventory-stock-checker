@@ -1,4 +1,4 @@
-package ecomm
+package ecom
 
 type Item struct {
 	Quantity int

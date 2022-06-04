@@ -1,0 +1,9 @@
+{
+    "gundamhobbyca": {
+        "config": {
+            "url": "",
+            "webhook_full": "",
+            "webhook_diff": ""
+        }
+    }
+}
