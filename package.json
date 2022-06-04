@@ -10,8 +10,9 @@
     "build": "tsc --outDir ./dist index.ts"
   },
   "dependencies": {
+    "@types/node": "^17.0.39",
     "cheerio": "^1.0.0-rc.11",
-    "typescript": "^4.7.3",
-    "@types/node": "^17.0.39"
+    "pg": "^8.7.3",
+    "typescript": "^4.7.3"
   }
 }
