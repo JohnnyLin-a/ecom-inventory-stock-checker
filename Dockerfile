@@ -1,15 +1,24 @@
+FROM golang:1.18-alpine as build
+
+WORKDIR /src
+
+COPY go.mod go.sum /src/
+
+RUN go mod download
+
+COPY ./ /src/
+
+RUN CGO_ENABLED=0 go build -o /root/main cmd/main/main.go
+
 FROM ubuntu:20.04
-ENV TZ="America/New_York" DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y python3 python3-pip firefox firefox-geckodriver && \
-    pip3 install -U pip && \
+    apt-get install -y tzdata && \
+    ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata \
     rm -rf /var/lib/apt/lists/*
 
-COPY ./requirements.txt /root/requirements.txt
+COPY --from=build /root/main /main
 
-RUN pip3 install wheel setuptools && pip3 install -r /root/requirements.txt
-
-VOLUME [ "/src" ]
-
-CMD python3 -m cmd.main
+CMD /main

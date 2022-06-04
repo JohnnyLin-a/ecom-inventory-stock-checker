@@ -8,25 +8,10 @@ https://www.metrohobbies.ca
 https://niigs.ca  
 https://scifianime.ca  
 
-Setting up venv:
-```console
-python3 -m venv $VENV_NAME
-```
-
-Dependencies freeze and install:
-```console
-pip freeze > requirements.txt
-pip install -r requirements.txt
-```
-
-How to start program:
-```console
-python -m cmd.main
-```
 
 ## How to setup:
 
-Pre-requisites: Docker, (Optionally) Python
+Pre-requisites: Docker
 
 1. Use `build_image.sh`
 2. Setup `.env` and `postgres.env` according to the template files.
