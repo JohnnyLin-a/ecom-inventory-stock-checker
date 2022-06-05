@@ -7,6 +7,13 @@ interface saveDataResult {
     error?: string
     execution_id?: number
 }
+interface diffFromLast2SuccessfulRuns {
+    "-": string[]
+    "+": string[]
+}
+interface itemName {
+    name: string
+}
 abstract class Ecom {
     config: EcomConfig
 
@@ -115,6 +122,76 @@ abstract class Ecom {
         client.release()
 
         return Promise.resolve({ execution_id })
+    }
+
+    async getDiffFromLast2SuccessfulRuns(
+        pool: Pool
+    ): Promise<diffFromLast2SuccessfulRuns> {
+        const diff: diffFromLast2SuccessfulRuns = { "+": [], "-": [] }
+        const client = await pool.connect()
+        let res = await client.query(
+            `SELECT second_last_run_items.item_id as "second_last_run_items.item_id", second_last_run_items.name as "second_last_run_items.name", last_run_items.item_id as "last_run_items.item_id", last_run_items.name as "last_run_items.name"
+        FROM (
+        SELECT execution_item_stocks.item_id, items.name
+        FROM execution_item_stocks
+        INNER JOIN executions on execution_item_stocks.execution_id = executions.id
+        inner join items on items.id = execution_item_stocks.item_id
+        WHERE executions.id IN (
+            SELECT executions.id FROM executions
+            inner join ecoms on ecoms.id = executions.ecom_id
+            WHERE executions.successful = true AND ecoms.website = $1
+            ORDER BY executions.id DESC
+            LIMIT 1
+            OFFSET 1 ROWS
+        )) AS second_last_run_items
+        FULL OUTER JOIN (SELECT execution_item_stocks.item_id, items.name
+        FROM execution_item_stocks
+        INNER JOIN executions on execution_item_stocks.execution_id = executions.id
+        inner join items on items.id = execution_item_stocks.item_id
+        WHERE executions.id IN (
+            SELECT executions.id FROM executions
+            inner join ecoms on ecoms.id = executions.ecom_id
+            WHERE executions.successful = true AND ecoms.website = $1
+            ORDER BY executions.id DESC
+            LIMIT 1
+        )) AS last_run_items ON last_run_items.item_id = second_last_run_items.item_id
+        WHERE second_last_run_items.item_id IS NULL OR last_run_items.item_id IS NULL;`,
+            [this.config.url]
+        )
+
+        client.release()
+
+        for (let r of res.rows) {
+            if (r["second_last_run_items.item_id"] != null) {
+                diff["-"].push(r["second_last_run_items.name"])
+            } else {
+                diff["+"].push(r["last_run_items.name"])
+            }
+        }
+        return Promise.resolve(diff)
+    }
+
+    async getFullInventory(pool: Pool): Promise<itemName[]> {
+        const itemnames: itemName[] = []
+        const client = await pool.connect()
+
+        const res = await client.query(
+            `SELECT items.name as "name"
+        FROM execution_item_stocks
+        INNER JOIN executions on execution_item_stocks.execution_id = executions.id
+        inner join items on items.id = execution_item_stocks.item_id
+        WHERE executions.id IN (
+            SELECT executions.id FROM executions
+            inner join ecoms on ecoms.id = executions.ecom_id
+            WHERE executions.successful = true AND ecoms.website = $1
+            ORDER BY executions.id DESC
+            LIMIT 1
+        )
+        ORDER BY items.name`,
+            [this.config.url]
+        )
+        client.release()
+        return Promise.resolve(res.rows)
     }
 }
 

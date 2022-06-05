@@ -32,15 +32,21 @@ const discordChunks: iDiscordChunks[] = []
         }
     })
 
-    ecomImpls.forEach((val) => {
-        val.execute()
+    ecomImpls.forEach((ecomImpl) => {
+        ecomImpl
+            .execute()
             .then(async (items: Item[]) => {
                 // Save execution data to db
-                const saveDataResult = await val.saveData(DBEngine, items)
-                
-                // Send to discord if save is successful
+                await ecomImpl.saveData(DBEngine, items)
 
                 // Compare diff against previous run & get full inventory
+                const diff = await ecomImpl.getDiffFromLast2SuccessfulRuns(
+                    DBEngine
+                )
+                const fullInventory = await ecomImpl.getFullInventory(DBEngine)
+
+                // Send to discord
+                console.log(diff, fullInventory)
 
                 // Send to discord in chunk
             })
