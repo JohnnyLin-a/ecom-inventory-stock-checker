@@ -8,11 +8,10 @@ import EcomConfig from "./internal/ecom/EcomConfig"
 import EcomMap from "./internal/ecom/EcomMap"
 import Item from "./internal/ecom/Item"
 
-const _ecomConfigs = process.env.ECOM_CONFIG
+const ecomConfigs: EcomConfig[] = process.env.ECOM_CONFIG
     ? JSON.parse(process.env.ECOM_CONFIG)
     : require("./ecom_configs.json")
 
-const ecomConfigs = _ecomConfigs as EcomConfig[]
 const ecomImpls: Ecom[] = []
 let ecomComplete = 0
 interface iDiscordChunks {
