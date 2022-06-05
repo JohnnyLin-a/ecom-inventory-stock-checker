@@ -1,5 +1,5 @@
 import axios, { AxiosRequestHeaders } from "axios"
-import * as cheerio from "cheerio/lib/slim"
+import * as cheerio from "cheerio"
 import { setTimeout } from "timers/promises"
 import Ecom from "./Ecom"
 import Item from "./Item"
@@ -14,10 +14,10 @@ class GundamhobbyCa extends Ecom {
 
     async execute(): Promise<Item[]> {
         console.log("execute from GundamhobbyCa")
+        const items: Item[] = []
         let nextUrl: string | undefined = this.config.url + "/collections/all"
 
         while (typeof nextUrl !== "undefined") {
-            await setTimeout(1000)
             let response = await axios.get(nextUrl, {
                 headers: GundamhobbyCa.REQUEST_HEADER,
             })
@@ -29,20 +29,20 @@ class GundamhobbyCa extends Ecom {
             nextUrl = $("link[rel='next']").attr("href")
             if (typeof nextUrl !== "undefined") {
                 nextUrl = this.config.url + nextUrl
+                await setTimeout(1000)
             }
 
             $("main>.grid>div.grid__item>div>div.grid__item").each(
                 (i, elem) => {
                     if (!$(elem).hasClass("sold-out")) {
                         const title = $(elem).find("p.grid-link__title").text()
-                        console.log(title)
+                        items.push(new Item(1, title))
                     }
                 }
             )
-            break
         }
 
-        return Promise.resolve([])
+        return Promise.resolve(items)
     }
 }
 
