@@ -5,3 +5,4 @@ ecom_configs.json
 postgres.env
 *.js
 dist
+pgdata

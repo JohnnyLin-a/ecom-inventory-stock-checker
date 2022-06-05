@@ -133,3 +133,4 @@ dmypy.json
 node_modules
 ecom_configs.json
 *.js
+pgdata
