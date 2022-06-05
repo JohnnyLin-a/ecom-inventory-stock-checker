@@ -1,5 +1,5 @@
 import axios, { AxiosRequestHeaders } from "axios"
-import * as cheerio from "cheerio"
+import * as cheerio from "cheerio/lib/slim"
 import { setTimeout } from "timers/promises"
 import Ecom from "./Ecom"
 import Item from "./Item"
@@ -31,16 +31,14 @@ class GundamhobbyCa extends Ecom {
                 nextUrl = this.config.url + nextUrl
             }
 
-            // console.log($.html())
-
-            $(
-                "main>div.grid>div.grid__item>div.grid_uniform>div.grid__item"
-            ).each((i, elem) => {
-                console.log(i)
-                //     const soldOut = $(elem).hasClass("sold-out")
-                //     const title = $(elem).find("p.grid-link__title").text()
-                //    console.log(soldOut, title)
-            })
+            $("main>.grid>div.grid__item>div>div.grid__item").each(
+                (i, elem) => {
+                    if (!$(elem).hasClass("sold-out")) {
+                        const title = $(elem).find("p.grid-link__title").text()
+                        console.log(title)
+                    }
+                }
+            )
             break
         }
 
