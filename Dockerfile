@@ -4,13 +4,13 @@ WORKDIR /src
 
 COPY yarn.lock package.json /src/
 
-RUN yarn install --production=true
+RUN yarn install
 
 COPY . /src/
 
 RUN yarn build
 
-FROM node:18-bullseye-slim
+FROM node:18-bullseye-slim as prod
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -22,5 +22,7 @@ RUN apt-get update && \
 COPY --from=build /src/dist /dist/
 
 WORKDIR /dist
+
+RUN yarn --production=true
 
 CMD node index.js
