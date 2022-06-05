@@ -19,7 +19,7 @@ RUN apt-get update && \
     dpkg-reconfigure -f noninteractive tzdata && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /src/dist /dist/
+COPY --from=build /src/dist /src/yarn.lock /src/package.json /dist/
 
 WORKDIR /dist
 
