@@ -1,6 +1,6 @@
-import { setTimeout } from "timers/promises";
-import Ecom from "./Ecom";
-import Item from "./Item";
+import { setTimeout } from "timers/promises"
+import Ecom from "./Ecom"
+import Item from "./Item"
 
 class NiigsCa extends Ecom {
     async execute(): Promise<Item[]> {

@@ -1,15 +1,15 @@
-import Item from "./Item";
+import Item from "./Item"
 import EcomConfig from "./EcomConfig"
 
 abstract class Ecom {
     config: EcomConfig
-    
+
     constructor(config: EcomConfig) {
-        this.config = config;
+        this.config = config
     }
 
     async execute(): Promise<Item[]> {
-        throw "not yet implemented";
+        throw "not yet implemented"
     }
 }
 
