@@ -6,3 +6,4 @@ postgres.env
 *.js
 dist
 pgdata
+*.html
