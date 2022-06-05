@@ -1,6 +1,10 @@
 import Item from "./Item"
 import EcomConfig from "./EcomConfig"
 
+interface saveDataResult {
+    error?: string
+    execution_id?: number
+}
 abstract class Ecom {
     config: EcomConfig
 
@@ -10,6 +14,10 @@ abstract class Ecom {
 
     async execute(): Promise<Item[]> {
         throw "not yet implemented"
+    }
+
+    async saveData(items: Item[]): Promise<saveDataResult> {
+        return Promise.resolve({})
     }
 }
 
