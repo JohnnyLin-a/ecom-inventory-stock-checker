@@ -7,6 +7,6 @@ services:
       - 55432:5432
     env_file:
       - postgres.env
-    volume:
+    volumes:
       - ./pgdata:/var/lib/postgresql/data
     restart: unless-stopped
