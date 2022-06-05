@@ -7,13 +7,17 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "tsc --outDir ./dist index.ts"
+    "build": "tsc --outDir ./dist --target 'ES2022' --moduleResolution 'node' index.ts",
+    "dev": "ts-node index.ts"
   },
   "dependencies": {
-    "@types/node": "^17.0.39",
     "axios": "^0.27.2",
     "cheerio": "^1.0.0-rc.11",
-    "pg": "^8.7.3",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.39",
+    "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
   }
 }
