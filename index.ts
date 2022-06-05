@@ -7,6 +7,7 @@ import Ecom from "./internal/ecom/Ecom"
 import EcomConfig from "./internal/ecom/EcomConfig"
 import EcomMap from "./internal/ecom/EcomMap"
 import Item from "./internal/ecom/Item"
+import DBEngine from "./internal/database/DBEngine"
 
 const ecomConfigs: EcomConfig[] = process.env.ECOM_CONFIG
     ? JSON.parse(process.env.ECOM_CONFIG)
@@ -35,8 +36,8 @@ const discordChunks: iDiscordChunks[] = []
         val.execute()
             .then(async (items: Item[]) => {
                 // Save execution data to db
-                const saveDataResult = await val.saveData(items)
-
+                const saveDataResult = await val.saveData(DBEngine, items)
+                
                 // Send to discord if save is successful
 
                 // Compare diff against previous run & get full inventory
