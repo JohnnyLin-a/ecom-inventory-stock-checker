@@ -10,8 +10,9 @@ class GundamhobbyCa extends Ecom {
         console.log("execute from GundamhobbyCa")
         const items: Item[] = []
         let nextUrl: string | undefined = this.config.url + "/collections/all"
-
+        let page = 0
         while (typeof nextUrl !== "undefined") {
+            console.log(this.config.url, ++page)
             let response = await axios.get(nextUrl, {
                 headers: REQUEST_HEADER,
             })
