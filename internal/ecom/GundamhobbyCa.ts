@@ -7,7 +7,7 @@ import { REQUEST_HEADER } from "./EcomConfig"
 
 class GundamhobbyCa extends Ecom {
     async execute(): Promise<Item[]> {
-        console.log("execute from GundamhobbyCa")
+        console.log(this.config.url, "execute")
         const items: Item[] = []
         let nextUrl: string | undefined = this.config.url + "/collections/all"
         let page = 0
