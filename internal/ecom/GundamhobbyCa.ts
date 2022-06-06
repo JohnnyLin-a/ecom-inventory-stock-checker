@@ -3,15 +3,9 @@ import * as cheerio from "cheerio"
 import { setTimeout } from "timers/promises"
 import Ecom from "./Ecom"
 import Item from "./Item"
+import { REQUEST_HEADER } from "./EcomConfig"
 
 class GundamhobbyCa extends Ecom {
-    static get REQUEST_HEADER(): AxiosRequestHeaders {
-        return {
-            "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36",
-        }
-    }
-
     async execute(): Promise<Item[]> {
         console.log("execute from GundamhobbyCa")
         const items: Item[] = []
@@ -19,7 +13,7 @@ class GundamhobbyCa extends Ecom {
 
         while (typeof nextUrl !== "undefined") {
             let response = await axios.get(nextUrl, {
-                headers: GundamhobbyCa.REQUEST_HEADER,
+                headers: REQUEST_HEADER,
             })
             if (response.status < 200 || response.status >= 300) {
                 return Promise.reject(response.status)
