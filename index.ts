@@ -8,6 +8,7 @@ import EcomConfig from "./internal/ecom/EcomConfig"
 import EcomMap from "./internal/ecom/EcomMap"
 import Item from "./internal/ecom/Item"
 import DBEngine from "./internal/database/DBEngine"
+import * as DiscordHelper from "./internal/common/discordhelper"
 
 const ecomConfigs: EcomConfig[] = process.env.ECOM_CONFIG
     ? JSON.parse(process.env.ECOM_CONFIG)
@@ -36,19 +37,74 @@ const discordChunks: iDiscordChunks[] = []
         ecomImpl
             .execute()
             .then(async (items: Item[]) => {
+                console.log("done exec")
                 // Save execution data to db
                 await ecomImpl.saveData(DBEngine, items)
-
-                // Compare diff against previous run & get full inventory
-                const diff = await ecomImpl.getDiffFromLast2SuccessfulRuns(
+                console.log("saved")
+                // Compare diff against previous run
+                const diffs = await ecomImpl.getDiffFromLast2SuccessfulRuns(
                     DBEngine
                 )
-                const fullInventory = await ecomImpl.getFullInventory(DBEngine)
-
+                console.log("diffs", diffs)
                 // Send to discord
-                console.log(diff, fullInventory)
 
-                // Send to discord in chunk
+                // Send inventory change (diffs)
+                if (diffs["+"].length != 0) {
+                    console.log("New stock")
+                    discordChunks.push({
+                        webhook: ecomImpl.config.webhook_diff,
+                        content: "@everyone\nNew arrivals:\n",
+                    })
+                    const splits = DiscordHelper.splitMsg(diffs["+"])
+                    for (let split of splits) {
+                        discordChunks.push({
+                            webhook: ecomImpl.config.webhook_diff,
+                            content: split,
+                        })
+                    }
+                }
+                if (diffs["-"].length != 0) {
+                    console.log("oos")
+                    discordChunks.push({
+                        webhook: ecomImpl.config.webhook_diff,
+                        content: "Recently out of stock:\n",
+                    })
+                    const splits = DiscordHelper.splitMsg(diffs["-"])
+                    for (let split of splits) {
+                        discordChunks.push({
+                            webhook: ecomImpl.config.webhook_diff,
+                            content: split,
+                        })
+                    }
+                }
+                if (diffs["+"].length + diffs["-"].length > 0) {
+                    discordChunks.push({
+                        webhook: ecomImpl.config.webhook_diff,
+                        content: "End of stock change",
+                    })
+
+                    // Send full inventory
+                    const fullInventory = await ecomImpl.getFullInventory(
+                        DBEngine
+                    )
+                    console.log("full inv")
+                    const splits = DiscordHelper.splitMsg(fullInventory)
+                    discordChunks.push({
+                        webhook: ecomImpl.config.webhook_full,
+                        content: "Posting full inventory at this time:",
+                    })
+                    for (let split of splits) {
+                        discordChunks.push({
+                            webhook: ecomImpl.config.webhook_full,
+                            content: split,
+                        })
+                    }
+                    discordChunks.push({
+                        webhook: ecomImpl.config.webhook_full,
+                        content: "End of full inventory",
+                    })
+                    console.log("end", ecomImpl.config.url)
+                }
             })
             .catch((reason) => {
                 console.log(reason)
@@ -66,9 +122,13 @@ const discordChunks: iDiscordChunks[] = []
                 content: reqData.content,
             })
             if (response.status < 200 || response.status >= 300) {
-                console.log("Failed to send content to", reqData.webhook)
+                console.log(
+                    response.status,
+                    "Failed to send content to",
+                    reqData.webhook
+                )
             }
-            await setTimeout(3000) // 3s is the buffer time for discord
+            await setTimeout(1000) // 3s is the buffer time for discord
         }
         await setTimeout(1) // Prevents cpu from being pinned at 100%
     }

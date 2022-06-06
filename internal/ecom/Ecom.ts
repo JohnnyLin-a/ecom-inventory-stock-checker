@@ -11,7 +11,7 @@ interface diffFromLast2SuccessfulRuns {
     "-": string[]
     "+": string[]
 }
-interface itemName {
+export interface itemName {
     name: string
 }
 abstract class Ecom {
