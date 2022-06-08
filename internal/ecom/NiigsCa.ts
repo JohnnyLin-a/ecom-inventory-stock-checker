@@ -37,7 +37,10 @@ class NiigsCa extends Ecom {
             response = await axios.get(
                 this.config.url +
                     "/collections/all-availible-items?sort_by=title-ascending&page=" +
-                    page
+                    page,
+                {
+                    headers: REQUEST_HEADER,
+                }
             )
             await setTimeout(1000)
 

@@ -38,7 +38,10 @@ class ScifianimeCa extends Ecom {
                 this.config.url +
                     "/page/" +
                     page +
-                    "/?post_type=product&s=&product_cat="
+                    "/?post_type=product&s=&product_cat=",
+                {
+                    headers: REQUEST_HEADER,
+                }
             )
             await setTimeout(1000)
 
