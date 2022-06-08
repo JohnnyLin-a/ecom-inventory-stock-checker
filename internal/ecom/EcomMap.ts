@@ -1,3 +1,4 @@
+import AgesThreeAndUpCa from "./AgesThreeAndUp"
 import ArgamahobbyCom from "./ArgamahobbyCom"
 import GundamhangarCom from "./GundamhangarCom"
 import GundamhobbyCa from "./GundamhobbyCa"
@@ -10,5 +11,6 @@ const map: any = {
     "https://scifianime.ca": ScifianimeCa,
     "https://server.gundamhangar.com": GundamhangarCom,
     "https://argamahobby.com": ArgamahobbyCom,
+    "https://www.agesthreeandup.ca": AgesThreeAndUpCa,
 }
 export default map
