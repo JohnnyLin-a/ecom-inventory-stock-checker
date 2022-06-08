@@ -1,4 +1,4 @@
-import Item from "./Item"
+import Item from "./EcomItem"
 import EcomConfig from "./EcomConfig"
 import { Pool } from "pg"
 import { RowID } from "../database/DBEngine"

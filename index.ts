@@ -6,7 +6,7 @@ import { setTimeout } from "timers/promises"
 import Ecom from "./internal/ecom/Ecom"
 import EcomConfig from "./internal/ecom/EcomConfig"
 import EcomMap from "./internal/ecom/EcomMap"
-import Item from "./internal/ecom/Item"
+import Item from "./internal/ecom/EcomItem"
 import DBEngine from "./internal/database/DBEngine"
 import * as DiscordHelper from "./internal/common/discordhelper"
 

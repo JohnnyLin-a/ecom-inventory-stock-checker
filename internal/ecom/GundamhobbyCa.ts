@@ -2,7 +2,7 @@ import axios, { AxiosRequestHeaders } from "axios"
 import * as cheerio from "cheerio"
 import { setTimeout } from "timers/promises"
 import Ecom from "./Ecom"
-import Item from "./Item"
+import Item from "./EcomItem"
 import { REQUEST_HEADER } from "./EcomConfig"
 
 class GundamhobbyCa extends Ecom {

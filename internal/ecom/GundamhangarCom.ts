@@ -1,7 +1,7 @@
 import axios from "axios"
 import { setTimeout } from "timers/promises"
 import Ecom from "./Ecom"
-import Item from "./Item"
+import Item from "./EcomItem"
 import { REQUEST_HEADER } from "./EcomConfig"
 
 class GundamhangarCom extends Ecom {
