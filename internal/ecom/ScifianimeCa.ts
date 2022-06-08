@@ -3,6 +3,7 @@ import { setTimeout } from "timers/promises"
 import Ecom from "./Ecom"
 import Item from "./Item"
 import * as cheerio from "cheerio"
+import { REQUEST_HEADER } from "./EcomConfig"
 
 class ScifianimeCa extends Ecom {
     async execute(): Promise<Item[]> {
@@ -11,7 +12,10 @@ class ScifianimeCa extends Ecom {
 
         // Find maxPage
         let response = await axios.get(
-            this.config.url + "/page/1/?post_type=product&s=&product_cat="
+            this.config.url + "/page/1/?post_type=product&s=&product_cat=",
+            {
+                headers: REQUEST_HEADER,
+            }
         )
         if (response.status < 200 || response.status >= 300) {
             return Promise.reject(response.status)

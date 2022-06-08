@@ -3,6 +3,7 @@ import { setTimeout } from "timers/promises"
 import Ecom from "./Ecom"
 import Item from "./Item"
 import * as cheerio from "cheerio"
+import { REQUEST_HEADER } from "./EcomConfig"
 
 class NiigsCa extends Ecom {
     async execute(): Promise<Item[]> {
@@ -12,7 +13,10 @@ class NiigsCa extends Ecom {
         let lastPageNumber = 0
         let response = await axios.get(
             this.config.url +
-                "/collections/all-availible-items?sort_by=title-ascending&page=1"
+                "/collections/all-availible-items?sort_by=title-ascending&page=1",
+            {
+                headers: REQUEST_HEADER,
+            }
         )
         if (response.status < 200 || response.status >= 300) {
             return Promise.reject(response.status)
