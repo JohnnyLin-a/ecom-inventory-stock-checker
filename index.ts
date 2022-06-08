@@ -106,10 +106,10 @@ interface iDiscordChunks {
                 for (let url in discordChunks) {
                     ;(async (endpoint) => {
                         for (let chunk of discordChunks[endpoint]) {
-                            await axios.post(endpoint, {
+                            const response = await axios.post(endpoint, {
                                 content: chunk,
                             })
-                            await setTimeout(1000)
+                            await setTimeout(Number(response.headers['x-ratelimit-limit'].trim()) * 1000)
                         }
                     })(url)
                 }
