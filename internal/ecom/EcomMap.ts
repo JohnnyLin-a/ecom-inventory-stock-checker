@@ -4,13 +4,9 @@ import GundamhangarCom from "./GundamhangarCom"
 import GundamhobbyCa from "./GundamhobbyCa"
 import NiigsCa from "./NiigsCa"
 import ScifianimeCa from "./ScifianimeCa"
+import AnimeExtreme from "./AnimeExtreme"
 
 const map: any = {
-    "https://www.gundamhobby.ca": GundamhobbyCa,
-    "https://niigs.ca": NiigsCa,
-    "https://scifianime.ca": ScifianimeCa,
-    "https://server.gundamhangar.com": GundamhangarCom,
-    "https://argamahobby.com": ArgamahobbyCom,
-    "https://www.agesthreeandup.ca": AgesThreeAndUpCa,
+    "https://animextreme.ca": AnimeExtreme,
 }
 export default map
