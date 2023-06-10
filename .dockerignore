@@ -7,3 +7,4 @@ postgres.env
 dist
 pgdata
 *.html
+dist
