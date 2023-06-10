@@ -19,10 +19,10 @@ FROM node:18-alpine as prod
 #     dpkg-reconfigure -f noninteractive tzdata && \
 #     rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /src/dist /dist/
+COPY --from=build /src/dist /src/package.json /src/yarn.lock /dist/
 
 WORKDIR /dist
 
-RUN yarn --production=true
+RUN yarn --production=true && rm /src/package.json /src/yarn.lock
 
 CMD node index.js
