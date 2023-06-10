@@ -26,12 +26,15 @@ class GundamhangarCom extends Ecom {
                 maxPage = response.data.pagination.total
             }
 
-            response.data.data.forEach((item: any) => {
+            ;(
+                response.data as {
+                    data: { type: string; title: string; stock: string }[]
+                }
+            ).data.forEach((item) => {
                 if (item.stock != "0") {
                     items.push(new Item(1, item.title))
                 }
             })
-            
         }
 
         return Promise.resolve(items)
