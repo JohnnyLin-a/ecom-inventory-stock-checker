@@ -1,6 +1,9 @@
 /**
  * Main entrypoint for ecom-inventory-stock-checker
  */
+import { config } from "dotenv"
+config({ path: "./postgres.env" })
+
 import axios from "axios"
 import { setTimeout } from "timers/promises"
 import Ecom from "./internal/ecom/Ecom"
@@ -11,15 +14,11 @@ import DBEngine from "./internal/database/DBEngine"
 import * as DiscordHelper from "./internal/common/discordhelper"
 
 const ecomConfigs: EcomConfig[] = process.env.ECOM_CONFIG
-    ? JSON.parse(process.env.ECOM_CONFIG)
+    ? JSON.parse(process.env.ECOM_CONFIG as string)
     : require("./ecom_configs.json")
 
 const ecomImpls: Ecom[] = []
 let ecomComplete = 0
-interface iDiscordChunks {
-    webhook: string
-    content: string
-}
 
 // Start of execution below
 
@@ -109,7 +108,11 @@ interface iDiscordChunks {
                             const response = await axios.post(endpoint, {
                                 content: chunk,
                             })
-                            await setTimeout(Number(response.headers['x-ratelimit-limit'].trim()) * 1000)
+                            await setTimeout(
+                                Number(
+                                    response.headers["x-ratelimit-limit"].trim()
+                                ) * 1000
+                            )
                         }
                     })(url)
                 }
