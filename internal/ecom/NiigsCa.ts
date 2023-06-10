@@ -22,9 +22,9 @@ class NiigsCa extends Ecom {
             return Promise.reject(response.status)
         }
         const $ = cheerio.load(response.data)
-        const pagination = $("ul.pagination-custom>li")
+        const pagination = $("nav.pagination>ul>li>a>span")
         lastPageNumber = Number(
-            $(pagination[pagination.length - 2])
+            $(pagination[pagination.length - 1])
                 .text()
                 .trim()
         )
@@ -45,9 +45,9 @@ class NiigsCa extends Ecom {
             await setTimeout(1000)
 
             const $ = cheerio.load(response.data)
-            $(".grid-uniform>div.grid-item").each((i, itemGrid) => {
+            $("#product-grid>div").each((i, itemGrid) => {
                 items.push({
-                    name: $(itemGrid).find("a>p").text().trim(),
+                    name: $(itemGrid).find("div>div>div>a.product-card__heading").text().trim(),
                     quantity: 1,
                 })
             })
