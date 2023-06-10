@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "tsc --outDir ./dist --target ES2022 --moduleResolution node --module commonjs index.ts",
+    "build": "tsc",
     "dev": "ts-node index.ts"
   },
   "dependencies": {

@@ -135,3 +135,5 @@ ecom_configs.json
 *.js
 pgdata
 *.html
+
+dist
