@@ -23,6 +23,6 @@ COPY --from=build /src/dist /src/package.json /src/yarn.lock /dist/
 
 WORKDIR /dist
 
-RUN yarn --production=true && rm /src/package.json /src/yarn.lock
+RUN yarn --production=true && rm /dist/package.json /dist/yarn.lock
 
 CMD node index.js
