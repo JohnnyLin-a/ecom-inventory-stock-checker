@@ -28,25 +28,27 @@ class AgesThreeAndUpCa extends Ecom {
 
             const $ = cheerio.load(response.data)
             if (maxPage == 0) {
-                const pagination = $(".page>a")
+                const pagination = $("ul.pagination>li>a")
                 maxPage = Number(
-                    $(pagination[pagination.length - 1])
+                    $(pagination[pagination.length - 2])
                         .text()
                         .trim()
+                        .replace("page ", "")
                 )
             }
 
-            $("main>div>div>.grid__item>a.product-card").each((i, product) => {
+            $(".Collection-wrapper>div").each((i, product) => {
                 if (
-                    $(product).find(
-                        ".product-card__info>.product-card__availability"
-                    ).length == 0
+                    $(product).find(".product-card>div>.product-label--soldout")
+                        .length == 0
                 ) {
                     items.push(
                         new Item(
                             1,
                             $(product)
-                                .find(".product-card__info>.product-card__name")
+                                .find(
+                                    ".product-card>.product-item--info>a>span"
+                                )
                                 .text()
                                 .trim()
                         )
