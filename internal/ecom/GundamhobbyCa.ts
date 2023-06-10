@@ -11,8 +11,9 @@ class GundamhobbyCa extends Ecom {
         const items: Item[] = []
         let nextUrl: string | undefined = this.config.url + "/collections/all"
         let page = 0
+        let lastPageNumber = 0
         while (typeof nextUrl !== "undefined") {
-            console.log(this.config.url, ++page)
+            console.log(this.config.url, ++page, "/", lastPageNumber)
             let response = await axios.get(nextUrl, {
                 headers: REQUEST_HEADER,
             })
@@ -20,6 +21,14 @@ class GundamhobbyCa extends Ecom {
                 return Promise.reject(response.status)
             }
             const $ = cheerio.load(response.data)
+            if (lastPageNumber === 0) {
+                const pagination = $("ul.pagination-custom>li>a")
+                lastPageNumber = Number(
+                    $(pagination[pagination.length - 2])
+                        .text()
+                        .trim()
+                )
+            }
 
             nextUrl = $("link[rel='next']").attr("href")
             if (typeof nextUrl !== "undefined") {
